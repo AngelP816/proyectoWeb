@@ -1,4 +1,4 @@
-    body {
+    /* body {
         background: radial-gradient(circle at top, #111827, #030712);
         color: white;
     }
@@ -10,7 +10,7 @@
     .game-card:hover {
         transform: scale(1.05);
         box-shadow: 0 0 25px #0d6efd;
-    }
+    } */
 
     .carousel-caption {
         background: rgba(0, 0, 0, 0.5);
