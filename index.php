@@ -1,21 +1,71 @@
+<?php
+include "config/conexion.php";
+
+// Juegos destacados (random)
+$destacados = $conexion->query("
+SELECT j.idJuego, j.nombre, j.precio, j.imagen
+FROM juego j
+ORDER BY RAND()
+LIMIT 6
+");
+
+// Juegos recientes
+$recientes = $conexion->query("
+SELECT j.idJuego, j.nombre, j.precio, j.imagen
+FROM juego j
+ORDER BY j.idJuego DESC
+LIMIT 6
+");
+
+// Todos los géneros
+$generos = $conexion->query("SELECT * FROM generos");
+
+// Todos los juegos
+$todos = $conexion->query("SELECT * FROM juego");
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- CSS propio -->
-    <link rel="stylesheet" href="CSS/style.css">
-
-    <!-- Bootstrap -->
+    <title>GameLatam - Tienda</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <title>GameLatam</title>
-</head>
+    <style>
+        body {
+            background: #0e1621;
+            color: white;
+        }
 
+        .card {
+            background: #1b2838;
+            color: white;
+            border: none;
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+        }
+
+        .hero {
+            background: linear-gradient(120deg, #171a21, #0e1621);
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .categoria-btn {
+            margin: 5px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
 <body>
 
-<?php include "navbar.php"; include "buttonTheme.php"; ?>
+<?php include "navbar.php"; ?>
 
 <!-- 🔥 Carrusel mejorado -->
 <div id="myCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
@@ -67,44 +117,93 @@
 
 </div>
 
-<!-- 🌟 Sección informativa gamer -->
-<section class="section-info container text-center">
-    <h2 class="mb-5 neon-text">¿Por qué elegir GameLatam?</h2>
+<!-- HERO -->
+<div class="hero">
+    <h1>🎮 Bienvenido a <span class="text-info">GameLatam</span></h1>
+    <p>La tienda gamer número 1 de Latinoamérica</p>
+</div>
 
-    <div class="row g-4">  
+<!-- FILTROS -->
+<div class="container mt-4 text-center">
+    <h4>Explorar por género</h4>
 
-        <div class="col-md-4">
-            <div class="info-card">
-                <div class="info-icon">🎮</div>
-                <h4>Los mejores juegos</h4>
-                <p>Catálogo actualizado con los mejores juegos multiplataforma.</p>
+    <?php while($g = $generos->fetch_assoc()): ?>
+        <a href="productos.php?genero=<?= $g['idGenero']; ?>" 
+           class="btn btn-outline-info categoria-btn">
+           <?= $g['nombre_genero']; ?>
+        </a>
+    <?php endwhile; ?>
+</div>
+
+<!-- DESTACADOS -->
+<div class="container mt-5">
+    <h3 class="mb-3">🔥 Juegos destacados</h3>
+    <div class="row">
+
+        <?php while($juego = $destacados->fetch_assoc()): ?>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow">
+                <img src="img/juegos/<?= $juego['imagen']; ?>" height="200">
+                <div class="card-body">
+                    <h5><?= $juego['nombre']; ?></h5>
+                    <p>$<?= $juego['precio']; ?></p>
+                    <a href="ver_juego.php?id=<?= $juego['idJuego'] ?>" class="btn btn-primary w-100">
+                        Ver juego
+                    </a>
+                </div>
             </div>
         </div>
-
-        <div class="col-md-4">
-            <div class="info-card">
-                <div class="info-icon">⚡</div>
-                <h4>Entrega rápida</h4>
-                <p>Compra digital al instante o envíos físicos rápidos.</p>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="info-card">
-                <div class="info-icon">💎</div>
-                <h4>Precios competitivos</h4>
-                <p>Las mejores ofertas para todos los gamers.</p>
-            </div>
-        </div>
+        <?php endwhile; ?>
 
     </div>
-</section>
+</div>
 
-<!-- Footer sencillo -->
-<footer class="text-center py-4 mt-5" style="background:#020617;">
-    <p>© 2025 GameLatam - Todos los derechos reservados 🎮</p>
-</footer>
+<!-- RECIENTES -->
+<div class="container mt-5">
+    <h3 class="mb-3">🆕 Últimos agregados</h3>
+    <div class="row">
+
+        <?php while($juego = $recientes->fetch_assoc()): ?>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow">
+                <img src="img/juegos/<?= $juego['imagen']; ?>" height="200">
+                <div class="card-body">
+                    <h5><?= $juego['nombre']; ?></h5>
+                    <p>$<?= $juego['precio']; ?></p>
+                    <a href="ver_juego.php?id=<?= $juego['idJuego'] ?>" class="btn btn-primary w-100">
+                        Ver juego
+                    </a>
+                </div>
+            </div>
+        </div>
+        <?php endwhile; ?>
+
+    </div>
+</div>
+
+<!-- TODOS -->
+<div class="container mt-5">
+    <h3 class="mb-3">📚 Todos los juegos</h3>
+
+    <div class="row">
+        <?php while($juego = $todos->fetch_assoc()): ?>
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow">
+                <img src="img/juegos/<?= $juego['imagen']; ?>" height="180">
+                <div class="card-body text-center">
+                    <h6><?= $juego['nombre']; ?></h6>
+                    <p>$<?= $juego['precio']; ?></p>
+                    <a href="ver_juego.php?id=<?= $juego['idJuego'] ?>" class="btn btn-success btn-sm">
+                        Comprar
+                    </a>
+                </div>
+            </div>
+        </div>
+        <?php endwhile; ?>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
